@@ -60,9 +60,9 @@ public enum GymEquipment {
     CABLE_CROSSOVER_MACHINE("MASZYNA DO ROZPIĘTEK ATLAS", "OGÓLNY", "Maszyna z dwoma regulowanymi wyciągami i nakładkami"),
     POWER_RACK("KLATKA", "OGÓLNY", "Klatka uniwersalna do ćwiczeń np przysiadów, podciągania");
 
-    private String name;
-    private String category;
-    private String description;
+    private final String name;
+    private final String category;
+    private final String description;
 
     GymEquipment(String name, String category, String description){
         this.name = name;

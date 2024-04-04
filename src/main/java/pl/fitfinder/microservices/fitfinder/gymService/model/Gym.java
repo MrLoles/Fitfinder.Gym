@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -25,5 +27,9 @@ public class Gym {
     @JsonIgnore
     private String openingHours;
 
+    @OneToMany
+    @JoinColumn(name = "gym_id")
+    @JsonIgnore
+    private List<GymGear> gymEquipmentList;
 }
 

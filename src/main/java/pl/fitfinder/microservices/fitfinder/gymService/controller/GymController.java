@@ -4,13 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
+import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
 import pl.fitfinder.microservices.fitfinder.gymService.service.GymService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/gyms")
+@RequestMapping("/gym")
 public class GymController {
 
     @Autowired
@@ -38,5 +40,11 @@ public class GymController {
     public String getOpeningHours(@PathVariable("name") String name) {
         return gymService.getOpeningHoursOfGym(name);
     }
+
+    @PostMapping("/{gymName}/addEquipment")
+    public GymGear addGymEquipment(@PathVariable String gymName, @RequestBody EquipmentGymGearDTO gymGearName) {
+        return gymService.addGymGear(gymName, gymGearName);
+    }
+
 }
 
