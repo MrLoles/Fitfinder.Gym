@@ -17,19 +17,19 @@ public class Gym {
     private int id;
 
     @Column(unique = true)
-    @Size(min = 3, message = "Gym name should have at least 2 characters!")
+    @Size(min = 3, message = "Gym name should have at least 3 characters!")
     private String gymName;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @JsonIgnore
-    private String openingHours;
+    private List<String> openingHours;
+
+    private String imgUrl;
 
     @OneToMany
     @JoinColumn(name = "gym_id")
     @JsonIgnore
     private List<GymGear> gymEquipmentList;
 }
-

@@ -21,5 +21,6 @@ public class GymGear {
     private String name;
     private String category;
     private String description;
+    private String imgUrl;
     private int quantity;
 }

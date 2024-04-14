@@ -37,13 +37,23 @@ public class GymController {
     }
 
     @GetMapping("/{name}/opening-hours")
-    public String getOpeningHours(@PathVariable("name") String name) {
+    public List<String> getOpeningHours(@PathVariable("name") String name) {
         return gymService.getOpeningHoursOfGym(name);
     }
 
     @PostMapping("/{gymName}/addEquipment")
     public GymGear addGymEquipment(@PathVariable String gymName, @RequestBody EquipmentGymGearDTO gymGearName) {
         return gymService.addGymGear(gymName, gymGearName);
+    }
+
+    @GetMapping("/search")
+    public List<Gym> findGyms(@RequestParam(required = false) String city, @RequestParam(required = false) String gymName) {
+        return gymService.findGymsByCityAndName(city, gymName);
+    }
+
+    @GetMapping("/{id}/equipment")
+    public List<GymGear> findGyms(@PathVariable String id) {
+        return gymService.findEquipmentById(id);
     }
 
 }

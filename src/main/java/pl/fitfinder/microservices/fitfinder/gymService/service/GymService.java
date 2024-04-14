@@ -1,8 +1,11 @@
 package pl.fitfinder.microservices.fitfinder.gymService.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
+import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.GymNotFound;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
 import pl.fitfinder.microservices.fitfinder.gymService.repository.GymGearRepository;
@@ -34,20 +37,20 @@ public class GymService {
 
     public Gym getGymById(int id) {
         return gymRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Gym not found with id: " + id));
+                .orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
     }
 
-    public String getOpeningHoursOfGym(String name) {
+    public List<String> getOpeningHoursOfGym(String name) {
         Optional<Gym> gym = gymRepository.findByGymName(name);
 
         return gym.map(Gym::getOpeningHours)
-                .orElseThrow(() -> new RuntimeException("Gym not found with name: " + name));
+                .orElseThrow(() -> new GymNotFound("Gym not found with name: " + name));
     }
 
     public GymGear addGymGear(String name, EquipmentGymGearDTO equipmentName){
         Optional<Gym> gym = gymRepository.findByGymName(name);
-        GymEquipment gymEquipment = GymEquipment.valueOf(equipmentName.getGymName());
-        Gym updatedGym = gym.orElseThrow(() -> new RuntimeException("Gym not found with name: " + name));
+        GymEquipment gymEquipment = GymEquipment.valueOf(equipmentName.getGymGearName());
+        Gym updatedGym = gym.orElseThrow(() -> new GymNotFound("Gym not found with name: " + name));
 
         GymGear gearToSave = new GymGear();
         gearToSave.setName(gymEquipment.getName());
@@ -60,6 +63,26 @@ public class GymService {
 
         gymRepository.save(updatedGym);
         return gearToSave;
+    }
+
+    public List<Gym> findGymsByCityAndName(String city, String gymName) {
+        PageRequest limit = PageRequest.of(0, 5);
+        if (city == null || city.isEmpty()) {
+            if (gymName == null || gymName.isEmpty()) {
+                return List.of();
+            } else {
+                return gymRepository.findByGymNameContainingIgnoreCase(gymName, limit).getContent();
+            }
+        } else if (gymName == null || gymName.isEmpty()) {
+            return gymRepository.findByAddress_CityContainingIgnoreCase(city, limit).getContent();
+        } else {
+            return gymRepository.findByAddress_CityAndGymNameContainingIgnoreCase(city, gymName, limit).getContent();
+        }
+    }
+
+    public List<GymGear> findEquipmentById(String id){
+        Gym gym = gymRepository.findById(Integer.parseInt(id)).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+        return gym.getGymEquipmentList();
     }
 }
 

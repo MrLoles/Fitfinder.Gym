@@ -1,5 +1,6 @@
 package pl.fitfinder.microservices.fitfinder.gymService.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EquipmentGymGearDTO {
-    String gymName;
+    @Size(min = 2, message = "gymGearName name should have at least 2 character!")
+    String gymGearName;
 }

@@ -11,6 +11,7 @@ import lombok.Setter;
 public class Address {
     @Id
     @GeneratedValue
+    @JsonIgnore
     private int id;
 
     @Column(nullable = false)
