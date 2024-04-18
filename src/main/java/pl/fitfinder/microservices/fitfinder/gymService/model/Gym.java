@@ -32,4 +32,12 @@ public class Gym {
     @JoinColumn(name = "gym_id")
     @JsonIgnore
     private List<GymGear> gymEquipmentList;
+
+    @ManyToMany
+    @JoinTable(
+            name = "gym_administrators",
+            joinColumns = @JoinColumn(name = "gym_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> administrators;
 }

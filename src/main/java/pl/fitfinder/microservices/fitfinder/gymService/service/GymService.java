@@ -2,19 +2,23 @@ package pl.fitfinder.microservices.fitfinder.gymService.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.GymNotFound;
+import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.UserNotFound;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
+import pl.fitfinder.microservices.fitfinder.gymService.model.User;
 import pl.fitfinder.microservices.fitfinder.gymService.repository.GymGearRepository;
 import pl.fitfinder.microservices.fitfinder.gymService.repository.GymRepository;
+import pl.fitfinder.microservices.fitfinder.gymService.repository.UserRepository;
 import pl.fitfinder.microservices.fitfinder.gymService.utils.enums.GymEquipment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static pl.fitfinder.microservices.fitfinder.gymService.utils.JwtTokenManager.getUserId;
 
 @Service
 public class GymService {
@@ -23,6 +27,9 @@ public class GymService {
     private GymRepository gymRepository;
     @Autowired
     private GymGearRepository gymGearRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     public Gym addGym(Gym gym) {
@@ -56,7 +63,8 @@ public class GymService {
         gearToSave.setName(gymEquipment.getName());
         gearToSave.setDescription(gymEquipment.getDescription());
         gearToSave.setCategory(gymEquipment.getCategory());
-        gearToSave.setQuantity(2);
+        gearToSave.setQuantity(equipmentName.getQuantity());
+        gearToSave.setImgUrl(equipmentName.getImgUrl());
         gymGearRepository.save(gearToSave);
 
         updatedGym.getGymEquipmentList().add(gearToSave);
@@ -83,6 +91,21 @@ public class GymService {
     public List<GymGear> findEquipmentById(String id){
         Gym gym = gymRepository.findById(Integer.parseInt(id)).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
         return gym.getGymEquipmentList();
+    }
+
+    public String addGymAdmin(String token, int id) {
+        int idUser = Integer.parseInt(getUserId(token));
+        User user = userRepository.findById(idUser).orElseThrow(() -> new UserNotFound("No matching user with id:" + idUser));
+
+
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+        gym.getAdministrators().add(user);
+        gymRepository.save(gym);
+        return "Success";
+    }
+
+    public List<User> getGymAdmins(int id) {
+        return gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id)).getAdministrators();
     }
 }
 

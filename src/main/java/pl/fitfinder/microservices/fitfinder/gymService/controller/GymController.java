@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
+import pl.fitfinder.microservices.fitfinder.gymService.model.User;
 import pl.fitfinder.microservices.fitfinder.gymService.service.GymService;
 
 import java.util.List;
@@ -56,5 +57,15 @@ public class GymController {
         return gymService.findEquipmentById(id);
     }
 
+    @PostMapping("/{id}/addAdmin")
+    public ResponseEntity<String> addGymAdmin(@RequestHeader("token") String token, @PathVariable int id){
+        String result = gymService.addGymAdmin(token, id);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}/getAdmins")
+    public List<User> getAdmins(@PathVariable int id){
+        return gymService.getGymAdmins(id);
+    }
 }
 

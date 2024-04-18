@@ -13,4 +13,6 @@ import lombok.Setter;
 public class EquipmentGymGearDTO {
     @Size(min = 2, message = "gymGearName name should have at least 2 character!")
     String gymGearName;
+    int quantity;
+    String imgUrl;
 }
