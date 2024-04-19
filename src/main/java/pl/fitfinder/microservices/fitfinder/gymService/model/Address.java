@@ -1,9 +1,7 @@
 package pl.fitfinder.microservices.fitfinder.gymService.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +11,7 @@ import lombok.Setter;
 public class Address {
     @Id
     @GeneratedValue
+    @JsonIgnore
     private int id;
 
     @Column(nullable = false)
@@ -23,4 +22,9 @@ public class Address {
 
     @Column(nullable = false)
     private String street;
+
+    @OneToOne
+    @JoinColumn(name = "gym_id")
+    @JsonIgnore
+    private Gym gym;
 }

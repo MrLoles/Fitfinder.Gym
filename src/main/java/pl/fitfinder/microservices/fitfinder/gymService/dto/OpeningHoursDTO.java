@@ -1,12 +1,14 @@
-package pl.fitfinder.microservices.fitfinder.gymService.model;
+package pl.fitfinder.microservices.fitfinder.gymService.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class OpeningHoursDTO {
     private String openingHours;
 }
