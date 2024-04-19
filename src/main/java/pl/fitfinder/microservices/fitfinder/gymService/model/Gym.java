@@ -33,6 +33,7 @@ public class Gym {
     @JsonIgnore
     private List<GymGear> gymEquipmentList;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "gym_administrators",

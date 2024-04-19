@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
+import pl.fitfinder.microservices.fitfinder.gymService.dto.GymWithEquipment;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
 import pl.fitfinder.microservices.fitfinder.gymService.model.User;
@@ -42,9 +43,9 @@ public class GymController {
         return gymService.getOpeningHoursOfGym(name);
     }
 
-    @PostMapping("/{gymName}/addEquipment")
-    public GymGear addGymEquipment(@PathVariable String gymName, @RequestBody EquipmentGymGearDTO gymGearName) {
-        return gymService.addGymGear(gymName, gymGearName);
+    @PostMapping("/{gymId}/addEquipment")
+    public GymGear addGymEquipment(@PathVariable int gymId, @RequestBody EquipmentGymGearDTO gymGearName) {
+        return gymService.addGymGear(gymId, gymGearName);
     }
 
     @GetMapping("/search")
@@ -58,14 +59,23 @@ public class GymController {
     }
 
     @PostMapping("/{id}/addAdmin")
-    public ResponseEntity<String> addGymAdmin(@RequestHeader("token") String token, @PathVariable int id){
+    public ResponseEntity<String> addGymAdmin(@RequestHeader("token") String token, @PathVariable int id) {
         String result = gymService.addGymAdmin(token, id);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}/getAdmins")
-    public List<User> getAdmins(@PathVariable int id){
+    public List<User> getAdmins(@PathVariable int id) {
         return gymService.getGymAdmins(id);
     }
-}
 
+    @GetMapping("/{id}/getInformationWithEquipment")
+    public GymWithEquipment getInformationWithEquipment(@PathVariable int id) {
+        return gymService.getInformationWithEquipment(id);
+    }
+
+    @DeleteMapping("/{id}/delete/{equipmentId}")
+    public void deleteEquipment(@PathVariable int id, @PathVariable int equipmentId) {
+        gymService.deleteEquipment(id, equipmentId);
+    }
+}

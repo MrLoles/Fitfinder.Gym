@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
+import pl.fitfinder.microservices.fitfinder.gymService.dto.GymWithEquipment;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.GymNotFound;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.UserNotFound;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
@@ -54,10 +55,12 @@ public class GymService {
                 .orElseThrow(() -> new GymNotFound("Gym not found with name: " + name));
     }
 
-    public GymGear addGymGear(String name, EquipmentGymGearDTO equipmentName){
-        Optional<Gym> gym = gymRepository.findByGymName(name);
+    public GymGear addGymGear(int gymId, EquipmentGymGearDTO equipmentName) {
+        Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymNotFound("Gym not found with id: " + gymId));
+        System.out.println("TEST " + equipmentName.getGymGearName());
         GymEquipment gymEquipment = GymEquipment.valueOf(equipmentName.getGymGearName());
-        Gym updatedGym = gym.orElseThrow(() -> new GymNotFound("Gym not found with name: " + name));
+
+        System.out.println("TES2" + gymEquipment.getName() + gymEquipment.getDescription());
 
         GymGear gearToSave = new GymGear();
         gearToSave.setName(gymEquipment.getName());
@@ -67,9 +70,9 @@ public class GymService {
         gearToSave.setImgUrl(equipmentName.getImgUrl());
         gymGearRepository.save(gearToSave);
 
-        updatedGym.getGymEquipmentList().add(gearToSave);
+        gym.getGymEquipmentList().add(gearToSave);
 
-        gymRepository.save(updatedGym);
+        gymRepository.save(gym);
         return gearToSave;
     }
 
@@ -88,7 +91,7 @@ public class GymService {
         }
     }
 
-    public List<GymGear> findEquipmentById(String id){
+    public List<GymGear> findEquipmentById(String id) {
         Gym gym = gymRepository.findById(Integer.parseInt(id)).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
         return gym.getGymEquipmentList();
     }
@@ -106,6 +109,18 @@ public class GymService {
 
     public List<User> getGymAdmins(int id) {
         return gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id)).getAdministrators();
+    }
+
+    public GymWithEquipment getInformationWithEquipment(int id) {
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+
+        return new GymWithEquipment(gym.getGymName(), gym.getAddress(), gym.getOpeningHours(), gym.getGymEquipmentList());
+    }
+
+    public void deleteEquipment(int id, int equipmentId) {
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+        gym.getGymEquipmentList().removeIf(equipment -> equipment.getId() == equipmentId);
+        gymRepository.save(gym);
     }
 }
 
