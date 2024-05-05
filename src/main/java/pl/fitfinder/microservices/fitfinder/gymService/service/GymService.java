@@ -3,13 +3,16 @@ package pl.fitfinder.microservices.fitfinder.gymService.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import pl.fitfinder.microservices.fitfinder.gymService.dto.ContactDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.GymWithEquipment;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.GymNotFound;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.UserNotFound;
+import pl.fitfinder.microservices.fitfinder.gymService.model.Contact;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
 import pl.fitfinder.microservices.fitfinder.gymService.model.User;
+import pl.fitfinder.microservices.fitfinder.gymService.repository.ContactRepository;
 import pl.fitfinder.microservices.fitfinder.gymService.repository.GymGearRepository;
 import pl.fitfinder.microservices.fitfinder.gymService.repository.GymRepository;
 import pl.fitfinder.microservices.fitfinder.gymService.repository.UserRepository;
@@ -32,10 +35,15 @@ public class GymService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ContactRepository contactRepository;
+
 
     public Gym addGym(Gym gym) {
         gym.setGymEquipmentList(new ArrayList<>());
         gym.getAddress().setGym(gym);
+        gym.setContact(new Contact());
+        gym.getContact().setGym(gym);
         return gymRepository.save(gym);
     }
 
@@ -54,6 +62,8 @@ public class GymService {
         return gym.map(Gym::getOpeningHours)
                 .orElseThrow(() -> new GymNotFound("Gym not found with name: " + name));
     }
+
+
 
     public GymGear addGymGear(int gymId, EquipmentGymGearDTO equipmentName) {
         Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymNotFound("Gym not found with id: " + gymId));
@@ -114,13 +124,40 @@ public class GymService {
     public GymWithEquipment getInformationWithEquipment(int id) {
         Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
 
-        return new GymWithEquipment(gym.getGymName(), gym.getAddress(), gym.getOpeningHours(), gym.getGymEquipmentList());
+        return new GymWithEquipment(gym.getGymName(), gym.getAddress(), gym.getOpeningHours(), gym.getGymEquipmentList(), gym.getContact());
     }
 
     public void deleteEquipment(int id, int equipmentId) {
         Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
         gym.getGymEquipmentList().removeIf(equipment -> equipment.getId() == equipmentId);
         gymRepository.save(gym);
+    }
+
+    public Contact setGymContact(int id, ContactDTO contactData){
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+        Contact contact;
+        if(gym.getContact() != null){
+            contact = gym.getContact();
+        } else{
+            contact = new Contact();
+            contact.setGym(gym);
+            contactRepository.save(contact);
+        }
+        contact.setEmail(contactData.getEmail());
+        contact.setPhoneNo(contactData.getPhoneNo());
+        contact.setInstagramLink(contactData.getInstagramLink());
+        contact.setFacebookLink(contactData.getFacebookLink());
+        gym.setContact(contact);
+        gymRepository.save(gym);
+        return contact;
+    }
+
+    public List<String> setGymWorkingHours(int id, List<String> workingHours){
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+        gym.setOpeningHours(workingHours);
+        gymRepository.save(gym);
+
+        return workingHours;
     }
 }
 

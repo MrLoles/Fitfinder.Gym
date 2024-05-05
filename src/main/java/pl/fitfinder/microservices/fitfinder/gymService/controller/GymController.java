@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.fitfinder.microservices.fitfinder.gymService.dto.ContactDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.GymWithEquipment;
+import pl.fitfinder.microservices.fitfinder.gymService.model.Contact;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
 import pl.fitfinder.microservices.fitfinder.gymService.model.User;
@@ -69,7 +71,7 @@ public class GymController {
         return gymService.getGymAdmins(id);
     }
 
-    @GetMapping("/{id}/getInformationWithEquipment")
+    @GetMapping("/{id}/getGymInformation")
     public GymWithEquipment getInformationWithEquipment(@PathVariable int id) {
         return gymService.getInformationWithEquipment(id);
     }
@@ -77,5 +79,15 @@ public class GymController {
     @DeleteMapping("/{id}/delete/{equipmentId}")
     public void deleteEquipment(@PathVariable int id, @PathVariable int equipmentId) {
         gymService.deleteEquipment(id, equipmentId);
+    }
+
+    @PostMapping("/{id}/contact")
+    public Contact setContact(@PathVariable int id, @RequestBody ContactDTO contactDTO) {
+        return gymService.setGymContact(id, contactDTO);
+    }
+
+    @PostMapping("/{id}/workingHours")
+    public List<String> setContact(@PathVariable int id, @RequestBody List<String> workingHours) {
+        return gymService.setGymWorkingHours(id, workingHours);
     }
 }

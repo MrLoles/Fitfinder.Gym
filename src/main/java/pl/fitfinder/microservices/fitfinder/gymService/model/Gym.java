@@ -41,4 +41,8 @@ public class Gym {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> administrators;
+
+    @JsonIgnore
+    @OneToOne
+    private Contact contact;
 }

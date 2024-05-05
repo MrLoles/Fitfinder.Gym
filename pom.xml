@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>pl.fitfinder.microservices</groupId>
 	<artifactId>fitfinder.gymService</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>fitfinder.gymService</name>
 	<description>Gyms service for Fit finder application</description>
 	<properties>
