@@ -8,14 +8,8 @@ import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.GymWithEquipment;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.GymNotFound;
 import pl.fitfinder.microservices.fitfinder.gymService.exception.exceptions.UserNotFound;
-import pl.fitfinder.microservices.fitfinder.gymService.model.Contact;
-import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
-import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
-import pl.fitfinder.microservices.fitfinder.gymService.model.User;
-import pl.fitfinder.microservices.fitfinder.gymService.repository.ContactRepository;
-import pl.fitfinder.microservices.fitfinder.gymService.repository.GymGearRepository;
-import pl.fitfinder.microservices.fitfinder.gymService.repository.GymRepository;
-import pl.fitfinder.microservices.fitfinder.gymService.repository.UserRepository;
+import pl.fitfinder.microservices.fitfinder.gymService.model.*;
+import pl.fitfinder.microservices.fitfinder.gymService.repository.*;
 import pl.fitfinder.microservices.fitfinder.gymService.utils.enums.GymEquipment;
 
 import java.util.ArrayList;
@@ -38,6 +32,11 @@ public class GymService {
     @Autowired
     private ContactRepository contactRepository;
 
+    @Autowired
+    private TrainingRepository trainingRepository;
+
+    @Autowired
+    private ExerciseRepository exerciseRepository;
 
     public Gym addGym(Gym gym) {
         gym.setGymEquipmentList(new ArrayList<>());
@@ -121,10 +120,10 @@ public class GymService {
         return gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id)).getAdministrators();
     }
 
-    public GymWithEquipment getInformationWithEquipment(int id) {
+    public GymWithEquipment getGymInformations(int id) {
         Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
 
-        return new GymWithEquipment(gym.getGymName(), gym.getAddress(), gym.getOpeningHours(), gym.getGymEquipmentList(), gym.getContact());
+        return new GymWithEquipment(gym.getGymName(), gym.getAddress(), gym.getOpeningHours(), gym.getGymEquipmentList(), gym.getContact(), gym.getTraining());
     }
 
     public void deleteEquipment(int id, int equipmentId) {
@@ -158,6 +157,52 @@ public class GymService {
         gymRepository.save(gym);
 
         return workingHours;
+    }
+
+    public Training setGymTraining(int id, Training trainingData) {
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+        Training training;
+
+        if(gym.getTraining() != null){
+            training = gym.getTraining();
+        } else{
+            training = new Training();
+            training.setGym(gym);
+        }
+
+        if (training.getExercises() != null) {
+            training.getExercises().clear();
+        }
+
+        List<Exercise> currentExercises = training.getExercises();
+        if (currentExercises != null) {
+            currentExercises.clear();
+        } else {
+            currentExercises = new ArrayList<>();
+            training.setExercises(currentExercises);
+        }
+
+        List<Exercise> newExercises = trainingData.getExercises();
+        if (newExercises != null) {
+            for (Exercise exercise : newExercises) {
+                exercise.setTraining(training);
+                currentExercises.add(exercise);
+            }
+        }
+
+        training.setName(trainingData.getName());
+
+        trainingRepository.save(training);
+        gym.setTraining(training);
+        gymRepository.save(gym);
+
+        return training;
+    }
+
+    public Training getGymTraining(int id) {
+        Gym gym = gymRepository.findById(id).orElseThrow(() -> new GymNotFound("Gym not found with id: " + id));
+
+        return gym.getTraining();
     }
 }
 

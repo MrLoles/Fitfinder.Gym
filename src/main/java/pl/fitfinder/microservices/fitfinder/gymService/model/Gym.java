@@ -45,4 +45,8 @@ public class Gym {
     @JsonIgnore
     @OneToOne
     private Contact contact;
+
+    @JsonIgnore
+    @OneToOne
+    private Training training;
 }

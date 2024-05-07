@@ -6,6 +6,7 @@ import lombok.Setter;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Address;
 import pl.fitfinder.microservices.fitfinder.gymService.model.Contact;
 import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
+import pl.fitfinder.microservices.fitfinder.gymService.model.Training;
 
 import java.util.List;
 
@@ -18,4 +19,5 @@ public class GymWithEquipment {
     private List<String> openingHours;
     private List<GymGear> gymEquipmentList;
     private Contact contact;
+    private Training training;
 }

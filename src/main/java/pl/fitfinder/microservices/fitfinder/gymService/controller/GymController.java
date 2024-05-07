@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.ContactDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.EquipmentGymGearDTO;
 import pl.fitfinder.microservices.fitfinder.gymService.dto.GymWithEquipment;
-import pl.fitfinder.microservices.fitfinder.gymService.model.Contact;
-import pl.fitfinder.microservices.fitfinder.gymService.model.Gym;
-import pl.fitfinder.microservices.fitfinder.gymService.model.GymGear;
-import pl.fitfinder.microservices.fitfinder.gymService.model.User;
+import pl.fitfinder.microservices.fitfinder.gymService.model.*;
 import pl.fitfinder.microservices.fitfinder.gymService.service.GymService;
 
 import java.util.List;
@@ -73,7 +70,7 @@ public class GymController {
 
     @GetMapping("/{id}/getGymInformation")
     public GymWithEquipment getInformationWithEquipment(@PathVariable int id) {
-        return gymService.getInformationWithEquipment(id);
+        return gymService.getGymInformations(id);
     }
 
     @DeleteMapping("/{id}/delete/{equipmentId}")
@@ -89,5 +86,15 @@ public class GymController {
     @PostMapping("/{id}/workingHours")
     public List<String> setContact(@PathVariable int id, @RequestBody List<String> workingHours) {
         return gymService.setGymWorkingHours(id, workingHours);
+    }
+
+    @GetMapping("{id}/training")
+    public Training getTraining(@PathVariable int id){
+        return gymService.getGymTraining(id);
+    }
+
+    @PostMapping("{id}/training")
+    public Training setTraining(@PathVariable int id, @RequestBody Training training){
+        return gymService.setGymTraining(id, training);
     }
 }
